@@ -14,34 +14,44 @@ const app = new App({
 });
 
 // Listens to incoming messages that contain "hello"
-app.message('hello', async ({ message, say }) => {
+app.command('/sherming', async ({ command, say, ack }) => {
+  app.logger.info(JSON.stringify(command));
+  ack();
   // say() sends a message to the channel where the event was triggered
   await say({
-    blocks: [
-      {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `Hey there <@${message.user}>!`
-        },
-        "accessory": {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "text": "Click Me"
-          },
-          "action_id": "button_click"
-        }
-      }
-    ],
-    text: `Hey there <@${message.user}>!`
-  });
+              "text": "Time for another Sherm session?",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Time for another Sherm session?"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "emoji": true,
+                        "text": "yuh",
+                      },
+                      "style": "primary",
+                      "value": "start",
+                      "action_id": "start_sherming"
+                    }
+                  ]
+                }
+              ]});
 });
 
-app.action('button_click', async ({ body, ack, say }) => {
+app.action('start_sherming', async ({ body, ack, say }) => {
   // Acknowledge the action
   await ack();
-  await say(`<@${body.user.id}> clicked the button`);
+  await say(`<@${body.user.id}> started sherming`);
+  // TODO: Start the sherming session, send a message to the channel with the start time and a button to stop the session
 });
 
 (async () => {
